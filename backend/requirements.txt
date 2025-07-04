@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-docx
+pdfminer.six
+openai
+azure-identity
+azure-confidentialledger
+python-dotenv
