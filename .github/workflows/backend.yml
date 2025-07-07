@@ -1,0 +1,33 @@
+name: Deploy Backend
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install fastapi uvicorn[standard] python-dotenv openai azure-confidentialledger azure-identity
+      - name: Archive project
+        working-directory: backend
+        run: zip -r ../backend.zip . -x '*.git*'
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: KoNpLiAI-Backend
+          package: backend.zip
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
